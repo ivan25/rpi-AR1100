@@ -167,12 +167,27 @@ int AR1100::send_command(unsigned char cmd, unsigned char * data, int data_count
 
 }
 
+bool AR1100::read_registers(unsigned char start_address, unsigned char data_count){
+    unsigned char data[3] = { 0x00, start_address, data_count };
+    #ifdef DEBUG
+        printf("READING %d REGISTERS STARTING FROM %d\n", data_count, start_address);
+    #else
+        printf("Compile with debug on to see the data!");
+    #endif
+    return send_command(AR1100_CMD_REG_READ, data, 3, true)==AR1100_CMD_RESULT_OK;
+}
+
 bool AR1100::touch_disable(){
     return send_command(AR1100_CMD_TOUCH_DISABLE, NULL, 0, true)==AR1100_CMD_RESULT_OK;
 }
 
 bool AR1100::touch_enable(){
     return send_command(AR1100_CMD_TOUCH_ENABLE, NULL, 0, true)==AR1100_CMD_RESULT_OK;
+}
+
+bool AR1100::set_threshold(unsigned char cal_threshold){
+    unsigned char data[4] = { 0x00, 0x02, 0x01, cal_threshold };
+    return send_command(AR1100_CMD_REG_WRITE, data, 4, true)==AR1100_CMD_RESULT_OK;
 }
 
 bool AR1100::calibrate(unsigned char type){

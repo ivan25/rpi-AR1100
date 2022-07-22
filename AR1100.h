@@ -56,8 +56,10 @@
             int send_command(unsigned char cmd, unsigned char * data, int data_count, bool wait_response=true); //sends a command to AR1100 and waits TIMEOUT_MS for a return packet (if wait_response is set to true)
             int write_data(unsigned char * data, int data_count, int * bytes_written, int time_out=AR1100_TIMEOUT);
             int read_data(unsigned char * data, int data_count, int * bytes_read, int time_out=AR1100_TIMEOUT);
+            bool read_registers(unsigned char start_address, unsigned char data_count);
             bool touch_disable(); //disable touch (call this first before sending any commands, then call clear_in_buffer)
             bool touch_enable(); //enable touch 
+            bool set_threshold(unsigned char cal_threshold); // set the touch sensitivity threshold
             bool calibrate(unsigned char type); //start calibration (need hid generic first)
             bool calibrate_next_point(); //returns true if we can calibrate next point
             bool switch_hid_generic(); //switch to hid generic, return true if success 

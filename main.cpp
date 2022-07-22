@@ -191,6 +191,9 @@ int main(int argc, char *argv[]){
     int i=0;
     int cal_type=0;
     int cal_points=9;
+    int cal_threshold=-1;
+    int rr_start_addr=-1;
+    int rr_data_count=-1; 
     
     if (argc==1 || (argc==2 && strcmp(argv[0], "-?")==0)){
         printf("Command line options:\n");
@@ -200,6 +203,10 @@ int main(int argc, char *argv[]){
         printf("    -d       switch AR11000 to digitizer mode.\n");
         printf("    -c [p]   calibrate using p number of points.\n");
         printf("             valid values for p: 4, 9 and 25 default is 9.\n");
+        printf("    -t [th]  set the touch sensitivity.\n");
+        printf("             with low numbers more pressure will be required to register.\n");
+        printf("    -rr [start_addr] [count]  read registers.\n");
+        printf("                              needs to be compiled with debug on to read the data.\n");
         return 0;
     }
     
@@ -257,6 +264,17 @@ int main(int argc, char *argv[]){
                     cal_points=9;
                 }
             }
+        }else if (strcmp(argv[i], "-t")==0) {
+            if (argc>i+1){
+                cal_threshold=atoi(argv[i+1]);
+                i++;
+            }
+        }else if (strcmp(argv[i], "-rr")==0) {
+            if (argc>i+2){
+                rr_start_addr=atoi(argv[i+1]);
+                rr_data_count=atoi(argv[i+2]);
+                i+=2;
+            }
         }else if (strcmp(argv[i], "-m")==0){
             AR1100_configured_mode = AR1100_MODE_MOUSE;
         }else if (strcmp(argv[i], "-h")==0){
@@ -280,6 +298,14 @@ int main(int argc, char *argv[]){
         if (AR1100.calibrate(cal_type)){
             setup_calibration_gui(cal_points);
         }
+    }
+    
+    if (cal_threshold>=0){
+        AR1100.set_threshold(cal_threshold);
+    }
+    
+    if (rr_data_count>=0 && rr_start_addr>=0){
+        AR1100.read_registers(rr_start_addr, rr_data_count);
     }
     
     switch (AR1100_configured_mode){
